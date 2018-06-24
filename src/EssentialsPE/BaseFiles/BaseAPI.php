@@ -430,7 +430,7 @@ class BaseAPI{
      *
      * @param CommandSender|Player $player
      *
-     * @return bool|void
+     * @return void
      */
     public function sendBalanceTop(Player $player): void{
         $moneyList = $this->economy->get("player-balances");
