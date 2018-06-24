@@ -1,7 +1,7 @@
 EssentialsPE  [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/LegendOfMCPE/EssentialsPE?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 =========
 
-The port version of [Bukkit Essentials](http://dev.bukkit.org/bukkit-plugins/essentials/) for [PocketMine-MP Software](http://www.pmmp.gq/).
+The port version of [Bukkit Essentials](http://dev.bukkit.org/bukkit-plugins/essentials/) for [PocketMine-MP Software](http://www.pmmp.io/).
 
 > EssentialsPE does not officially provide compatibility with _Modded PocketMine-MP_ server software.
 >
