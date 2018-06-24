@@ -6,8 +6,9 @@ namespace EssentialsPE\BaseFiles;
 
 use EssentialsPE\Loader;
 use pocketmine\scheduler\Plugin;
+use pocketmine\scheduler\Task;
 
-abstract class BaseTask extends Plugin{
+abstract class BaseTask extends Task{
     /** @var BaseAPI */
     private $api;
 
@@ -19,9 +20,9 @@ abstract class BaseTask extends Plugin{
     }
 
     /**
-     * @return Loader
+     * @return Loader|Plugin
      */
-    public final function getPlugin(): Loader{
+    public final function getPlugin(): Plugin{
         return $this->getAPI()->getEssentialsPEPlugin();
     }
 
