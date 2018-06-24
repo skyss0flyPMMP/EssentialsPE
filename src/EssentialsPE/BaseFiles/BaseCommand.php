@@ -6,6 +6,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\Player;
+use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
 
 abstract class BaseCommand extends Command implements PluginIdentifiableCommand{
@@ -31,7 +32,7 @@ abstract class BaseCommand extends Command implements PluginIdentifiableCommand{
     /**
      * @return Loader
      */
-    public final function getPlugin(): Loader{
+    public final function getPlugin(): Plugin{
         return $this->getAPI()->getEssentialsPEPlugin();
     }
 
