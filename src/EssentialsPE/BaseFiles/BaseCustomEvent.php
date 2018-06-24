@@ -6,7 +6,6 @@ namespace EssentialsPE\BaseFiles;
 
 use EssentialsPE\Loader;
 use pocketmine\event\plugin\PluginEvent;
-use pocketmine\plugin\Plugin;
 
 abstract class BaseCustomEvent extends PluginEvent{
     /** @var BaseAPI */
@@ -23,7 +22,7 @@ abstract class BaseCustomEvent extends PluginEvent{
     /**
      * @return Loader
      */
-    public final function getPlugin(): Plugin{
+    public final function getPlugin(): Loader{
         return $this->getAPI()->getEssentialsPEPlugin();
     }
 
