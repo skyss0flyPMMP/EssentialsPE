@@ -144,9 +144,15 @@ class SignEvents extends BaseEventHandler{
                                 $this->getAPI()->addToPlayerBalance($event->getPlayer(), -$price);
                             }
                         }
-                        if($this->getAPI()->isRepairable($item = $event->getPlayer()->getInventory()->getItemInHand())){
-                            $item->setDamage(0);
-                            $event->getPlayer()->sendMessage(TextFormat::GREEN . "Item successfully repaired" . TextFormat::GREEN . ($price ? " for " . $this->getAPI()->getCurrencySymbol() . $price : null));
+                        $index = $event->getPlayer()->getInventory()->getHeldItemIndex();
+                        $item = $event->getPlayer()->getInventory()->getItem($index);
+                        if($this->getAPI()->isRepairable($item)) {
+                            if($item->getDamage() > 0) {
+                                $event->getPlayer()->getInventory()->setItem($index , $item->setDamage(0));
+                                $event->getPlayer()->sendMessage(TextFormat::GREEN . "Item successfully repaired" . TextFormat::GREEN . ($price ? " for " . $this->getAPI()->getCurrencySymbol() . $price : null));
+                            }else{
+                                $event->getPlayer()->sendMessage(TextFormat::RED . "[Error] Item does not have any damage");
+                            }
                         }
                     }elseif($v === "All"){
                         $price = substr($tile->getText()[2], 7);
@@ -159,14 +165,18 @@ class SignEvents extends BaseEventHandler{
                                 $this->getAPI()->addToPlayerBalance($event->getPlayer(), -$price);
                             }
                         }
-                        foreach ($event->getPlayer()->getInventory()->getContents() as $item){
+                        foreach($event->getPlayer()->getInventory()->getContents() as $index => $item){
                             if($this->getAPI()->isRepairable($item)){
-                                $item->setDamage(0);
+                                if($item->getDamage() > 0){
+                                    $event->getPlayer()->getInventory()->setItem($index, $item->setDamage(0));
+                                }
                             }
                         }
-                        foreach ($event->getPlayer()->getInventory()->getArmorContents() as $item){
+                        foreach($event->getPlayer()->getArmorInventory()->getContents() as $index => $item){
                             if($this->getAPI()->isRepairable($item)){
-                                $item->setDamage(0);
+                                if($item->getDamage() > 0){
+                                    $event->getPlayer()->getArmorInventory()->setItem($index, $item->setDamage(0));
+                                }
                             }
                         }
                         $event->getPlayer()->sendMessage(TextFormat::GREEN . "All the tools on your inventory were repaired" . TextFormat::AQUA . "\n(including the equipped Armor)" . TextFormat::GREEN . ($price ? " for " . $this->getAPI()->getCurrencySymbol() . $price : null));

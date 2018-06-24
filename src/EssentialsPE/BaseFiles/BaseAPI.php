@@ -24,6 +24,7 @@ use EssentialsPE\Tasks\Updater\UpdateInstallTask;
 use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\PrimedTNT;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -51,7 +52,6 @@ use pocketmine\OfflinePlayer;
 use pocketmine\permission\Permission;
 use pocketmine\Player;
 use pocketmine\Server;
-use pocketmine\utils\Color;
 use pocketmine\utils\Config;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
@@ -270,10 +270,10 @@ class BaseAPI{
         $this->getSession($player)->setAFK($state);
         $time = $this->getEssentialsPEPlugin()->getConfig()->getNested("afk.auto-kick");
         if(!$state && ($id = $this->getSession($player)->getAFKKickTaskID()) !== null){
-            $this->getServer()->getScheduler()->cancelTask($id);
+            $this->getEssentialsPEPlugin()->getScheduler()->cancelTask($id);
             $this->getSession($player)->removeAFKKickTaskID();
         }elseif($state && (is_int($time) && $time  > 0) && !$player->hasPermission("essentials.afk.kickexempt")){
-            $task = $this->getServer()->getScheduler()->scheduleDelayedTask(new AFKKickTask($this, $player), $time * 20);
+            $task = $this->getEssentialsPEPlugin()->getScheduler()->scheduleDelayedTask(new AFKKickTask($this, $player), $time * 20);
             $this->getSession($player)->setAFKKickTaskID($task->getTaskId());
         }
         $player->sendMessage(TextFormat::YELLOW . "You're " . ($this->isAFK($player) ? "now" : "no longer") . " AFK");
@@ -300,7 +300,7 @@ class BaseAPI{
      */
     public function scheduleAutoAFKSetter(): void{
         if(is_int($v = $this->getEssentialsPEPlugin()->getConfig()->getNested("afk.auto-set")) && $v > 0){
-            $this->getServer()->getScheduler()->scheduleDelayedTask(new AFKSetterTask($this), 600); // Check every 30 seconds...
+            $this->getEssentialsPEPlugin()->getScheduler()->scheduleDelayedTask(new AFKSetterTask($this), 600); // Check every 30 seconds...
         }
     }
 
@@ -428,9 +428,9 @@ class BaseAPI{
     /**
      * Return the top 5 players with most money
      *
-     * @param CommandSender $player
+     * @param CommandSender|Player $player
      *
-     * @return bool
+     * @return void
      */
     public function sendBalanceTop(Player $player): void{
         $moneyList = $this->economy->get("player-balances");
@@ -792,7 +792,7 @@ class BaseAPI{
      */
     public function getServerGeoLocation(): string{
         if($this->serverGeoLocation === null){
-            $this->getServer()->getScheduler()->scheduleAsyncTask(new GeoLocation(null));
+            $this->getServer()->getAsyncPool()->submitTask(new GeoLocation(null));
         }
         return $this->serverGeoLocation;
     }
@@ -1483,13 +1483,14 @@ class BaseAPI{
         }
         return $found;
     }
+
     /**
      * Let you search for a player using his Display name(Nick) or Real name
      * Instead of returning false, this method will create an OfflinePlayer object.
      *
      * @param string $name
      *
-     * @return Player|OfflinePlayer
+     * @return IPlayer|Player|OfflinePlayer
      */
     public function getOfflinePlayer(string $name): IPlayer{
         $player = $this->getPlayer($name);
@@ -1815,14 +1816,10 @@ class BaseAPI{
                     $this->getEssentialsPEPlugin()->getLogger()->info($p->getName() . " is also known as " . $n);
                     unset($values["nick"]);
                 }
-                $v = BaseSession::$defaults["isVanished"];
-                $vNP = BaseSession::$defaults["noPacket"];
                 if(isset($values["isVanished"])){
                     if(!isset($values["noPacket"])){
                         $values["noPacket"] = false;
                     }
-                    $v = $values["isVanished"];
-                    $vNP = $values["noPacket"];
                     unset($values["isVanished"]);
                     unset($values["noPacket"]);
                 }
@@ -1833,7 +1830,7 @@ class BaseAPI{
             }
             $r[] = $this->sessions[$spl];
         }
-        $this->getServer()->getScheduler()->scheduleAsyncTask(new GeoLocation($player));
+        $this->getServer()->getAsyncPool()->submitTask(new GeoLocation($player));
         $this->getEssentialsPEPlugin()->getLogger()->debug("Finished session creation.");
         return $r;
     }
@@ -2094,7 +2091,7 @@ class BaseAPI{
      * @param Player $player
      */
     private function scheduleTPRequestTask(Player $player): void{
-        $task = $this->getServer()->getScheduler()->scheduleDelayedTask(new TPRequestTask($this, $player), 20 * 60 * 5);
+        $task = $this->getEssentialsPEPlugin()->getScheduler()->scheduleDelayedTask(new TPRequestTask($this, $player), 20 * 60 * 5);
         $this->getSession($player)->setRequestToTaskID($task->getTaskId());
     }
 
@@ -2104,7 +2101,7 @@ class BaseAPI{
      * @param Player $player
      */
     private function cancelTPRequestTask(Player $player): void{
-        $this->getServer()->getScheduler()->cancelTask($this->getSession($player)->getRequestToTaskID());
+        $this->getEssentialsPEPlugin()->getScheduler()->cancelTask($this->getSession($player)->getRequestToTaskID());
         $this->getSession($player)->removeRequestToTaskID();
     }
 
@@ -2209,7 +2206,7 @@ class BaseAPI{
             return false;
         }
         $this->getServer()->getLogger()->debug(TextFormat::YELLOW . "Running EssentialsPE's UpdateFetchTask");
-        $this->getServer()->getScheduler()->scheduleAsyncTask($task = new UpdateFetchTask($this->getUpdateBuild(), $install));
+        $this->getServer()->getAsyncPool()->submitTask($task = new UpdateFetchTask($this->getUpdateBuild(), $install));
         $this->updaterTask = $task;
         return true;
     }
@@ -2219,7 +2216,7 @@ class BaseAPI{
      */
     public function scheduleUpdaterTask(): void{
         if($this->isUpdaterEnabled()){
-            $this->getServer()->getScheduler()->scheduleDelayedTask(new AutoFetchCallerTask($this), $this->getUpdaterInterval() * 20);
+            $this->getEssentialsPEPlugin()->getScheduler()->scheduleDelayedTask(new AutoFetchCallerTask($this), $this->getUpdaterInterval() * 20);
         }
     }
 
@@ -2285,8 +2282,7 @@ class BaseAPI{
      */
     public function setVanish(Player $player, bool $state, bool $noPacket = false): bool{
         if($this->invisibilityEffect === null){
-            $effect = new Effect(Effect::INVISIBILITY, "Vanish", new Color(127, 131, 146));
-            $effect->setDuration(INT32_MAX);
+            $effect = new EffectInstance(Effect::getEffect(Effect::INVISIBILITY), INT32_MAX, 0, false);
             $this->invisibilityEffect = $effect;
         }
         $this->getServer()->getPluginManager()->callEvent($ev = new PlayerVanishEvent($this, $player, $state, $noPacket));
