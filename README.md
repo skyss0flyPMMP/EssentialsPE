@@ -26,10 +26,6 @@ You can find a detailed list of features included in EssentialsPE over [here](ht
  Allow players to set, delete or modify their homes, allowing them to warp to those any time.<br>
  [Homes Wiki](https://github.com/LegendOfMCPE/EssentialsPE/wiki/Commands-List#home-commands)
  
- - Economy:<br>
- Set up an economy system with the economy features EssentialsPE provides.<br>
- [Economy Wiki](https://github.com/LegendOfMCPE/EssentialsPE/wiki/EssentialsPE-API#economy-api)
- 
  - Special Signs:<br>
  Place special signs that execute the action displayed on the sign.<br>
  [Special Signs Wiki](https://github.com/LegendOfMCPE/EssentialsPE/wiki/Special-Signs)
