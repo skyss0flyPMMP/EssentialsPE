@@ -87,9 +87,6 @@ class Loader extends PluginBase{
     private const version = "0.0.4";
 
     public function onEnable(): void{
-        if($this->getConfig()->get("enable") === false) {
-           $this->setEnabled(false);
-        }
         // Before anything else...
         $this->checkConfig();
 
