@@ -18,9 +18,6 @@ use EssentialsPE\Tasks\AFK\AFKKickTask;
 use EssentialsPE\Tasks\AFK\AFKSetterTask;
 use EssentialsPE\Tasks\GeoLocation;
 use EssentialsPE\Tasks\TPRequestTask;
-use EssentialsPE\Tasks\Updater\AutoFetchCallerTask;
-use EssentialsPE\Tasks\Updater\UpdateFetchTask;
-use EssentialsPE\Tasks\Updater\UpdateInstallTask;
 use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Effect;
@@ -2149,93 +2146,6 @@ class BaseAPI{
      */
     public function switchUnlimited(Player $player): void{
         $this->setUnlimited($player, !$this->isUnlimitedEnabled($player));
-    }
-
-    /**  _    _           _       _
-     *  | |  | |         | |     | |
-     *  | |  | |_ __   __| | __ _| |_ ___ _ __
-     *  | |  | | '_ \ / _` |/ _` | __/ _ | '__|
-     *  | |__| | |_) | (_| | (_| | ||  __| |
-     *   \____/| .__/ \__,_|\__,_|\__\___|_|
-     *         | |
-     *         |_|
-     */
-
-    /** @var UpdateFetchTask */
-    private $updaterTask = null;
-
-    /** @var UpdateInstallTask */
-    public $updaterDownloadTask = null; // Used to prevent Async Task conflicts with Server's limit :P
-
-    /**
-     * Tell if the auto-updater is enabled or not
-     *
-     * @return bool
-     */
-    public function isUpdaterEnabled(): bool{
-        return $this->getEssentialsPEPlugin()->getConfig()->getNested("updater.enabled");
-    }
-
-    /**
-     * Tell the build of the updater for EssentialsPE
-     *
-     * @return string
-     */
-    public function getUpdateBuild(): string{
-        return $this->getEssentialsPEPlugin()->getConfig()->getNested("updater.channel", "stable");
-    }
-
-    /**
-     * Get the interval for the updater to get in action
-     *
-     * @return int
-     */
-    public function getUpdaterInterval(): int{
-        return $this->getEssentialsPEPlugin()->getConfig()->getNested("updater.time-interval");
-    }
-
-    /**
-     * Get the latest version, and install it if you want
-     *
-     * @param bool $install
-     *
-     * @return bool
-     */
-    public function fetchEssentialsPEUpdate(bool $install = false): bool{
-        if(($this->updaterTask !== null && $this->updaterTask->isRunning()) && ($this->updaterDownloadTask !== null && $this->updaterDownloadTask->isRunning())){
-            return false;
-        }
-        $this->getServer()->getLogger()->debug(TextFormat::YELLOW . "Running EssentialsPE's UpdateFetchTask");
-        $this->getServer()->getAsyncPool()->submitTask($task = new UpdateFetchTask($this->getUpdateBuild(), $install));
-        $this->updaterTask = $task;
-        return true;
-    }
-
-    /**
-     * Schedules the updater task :3
-     */
-    public function scheduleUpdaterTask(): void{
-        if($this->isUpdaterEnabled()){
-            $this->getEssentialsPEPlugin()->getScheduler()->scheduleDelayedTask(new AutoFetchCallerTask($this), $this->getUpdaterInterval() * 20);
-        }
-    }
-
-    /**
-     * Warn about a new update of EssentialsPE
-     *
-     * @param string $message
-     */
-    public function broadcastUpdateAvailability(string $message): void{
-        if($this->getEssentialsPEPlugin()->getConfig()->getNested("updater.warn-console")){
-            $this->getServer()->getLogger()->info($message);
-        }
-        if($this->getEssentialsPEPlugin()->getConfig()->getNested("updater.warn-players")){
-            foreach($this->getServer()->getOnlinePlayers() as $p){
-                if($p->hasPermission("essentials.update.notify")){
-                    $p->sendMessage($message);
-                }
-            }
-        }
     }
 
     /** __      __         _     _

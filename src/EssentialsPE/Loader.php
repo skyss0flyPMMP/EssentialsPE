@@ -23,7 +23,6 @@ use EssentialsPE\Commands\Economy\Sell;
 use EssentialsPE\Commands\Economy\SetWorth;
 use EssentialsPE\Commands\Economy\Worth;
 use EssentialsPE\Commands\Economy\BalanceTop;
-use EssentialsPE\Commands\EssentialsPE;
 use EssentialsPE\Commands\Feed;
 use EssentialsPE\Commands\Extinguish;
 use EssentialsPE\Commands\Fly;
@@ -109,9 +108,6 @@ class Loader extends PluginBase{
         if(count($p = $this->getServer()->getOnlinePlayers()) > 0){
             $this->getAPI()->createSession($p);
         }
-        if($this->getAPI()->isUpdaterEnabled()){
-            $this->getAPI()->fetchEssentialsPEUpdate(false);
-        }
         $this->getAPI()->scheduleAutoAFKSetter();
     }
 
@@ -148,7 +144,6 @@ class Loader extends PluginBase{
             new Compass($this->getAPI()),
             new Condense($this->getAPI()),
             new Depth($this->getAPI()),
-            new EssentialsPE($this->getAPI()),
             new Extinguish($this->getAPI()),
             new Fly($this->getAPI()),
             new GetPos($this->getAPI()),
@@ -369,33 +364,6 @@ class Loader extends PluginBase{
             }
             if($value !== null){
                 $this->getConfig()->setNested("afk." . $key, $value);
-            }
-        }
-
-        $updater = ["enabled", "time-interval", "warn-console", "warn-players", "channel"];
-        foreach($updater as $key){
-            $value = null;
-            $k = $this->getConfig()->getNested("updater." . $key);
-            switch($key){
-                case "time-interval":
-                    if(!is_int($k)){
-                        $value = 1800;
-                    }
-                    break;
-                case "enabled":
-                case "warn-console":
-                case "warn-players":
-                    if(!is_bool($k)){
-                        $value = true;
-                    }
-                    break;
-                case "channel":
-                    if(!is_string($k) || ($k !== "stable" && $k !== "beta" && $k !== "development")){
-                        $value = "stable";
-                    }
-            }
-            if($value !== null){
-                $this->getConfig()->setNested("updater." . $key, $value);
             }
         }
     }

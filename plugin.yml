@@ -569,16 +569,6 @@ permissions:
                     essentials.unlimited.other:
                         default: op
                         description: "Allow to enable unlimited placing of blocks to other players"
-            essentials.update:
-                default: false
-                description: "Allow to update EssentialsPE to the latest available version, or to check if there is one available"
-                children:
-                    essentials.update.use:
-                        default: op
-                        description: "Allow to update EssentialsPE with the '/essentials update' command "
-                    essentials.update.notify:
-                        default: op
-                        description: "Get notified when a new version of EssentialsPE if found"
             essentials.vanish:
                 default: false
                 description: "Hide yourself or another player"
