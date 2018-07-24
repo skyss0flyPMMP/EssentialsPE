@@ -3,7 +3,7 @@ EssentialsPE
 
 | Poggit | Discord |
 | :---: | :---: |
-[![Poggit](https://poggit.pmmp.io/ci.shield/poggit-orphanage/EssentialsPE/EssentialsPE)](https://poggit.pmmp.io/ci/LegendOfMCPE/EssentialsPE/EssentialsPE) | <a href="https://discord.gg/NgHf9jt"><img src="https://discordapp.com/api/guilds/402639859535052811/embed.png" alt="Discord server"/></a> |
+[![Poggit](https://poggit.pmmp.io/ci.shield/poggit-orphanage/EssentialsPE/EssentialsPE)](https://poggit.pmmp.io/ci/poggit-orphanage/EssentialsPE/EssentialsPE) | <a href="https://discord.gg/NgHf9jt"><img src="https://discordapp.com/api/guilds/402639859535052811/embed.png" alt="Discord server"/></a> |
 
 
 The port version of [Bukkit Essentials](http://dev.bukkit.org/bukkit-plugins/essentials/) for [PocketMine-MP Software](http://www.pmmp.io/).
