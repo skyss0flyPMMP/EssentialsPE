@@ -85,6 +85,7 @@ use pocketmine\utils\TextFormat;
 class Loader extends PluginBase{
     /** @var BaseAPI */
     private $api;
+    private const version = "0.0.4";
 
     public function onEnable(): void{
         if($this->getConfig()->get("enable") === false) {
@@ -292,7 +293,7 @@ class Loader extends PluginBase{
         $this->saveResource("Warps.yml");
         $cfg = $this->getConfig();
 
-        if(!$cfg->exists("version") || $cfg->get("version") !== "0.0.3"){
+        if(!$cfg->exists("version") || $cfg->get("version") !== self::version){
             $this->getLogger()->debug(TextFormat::RED . "An invalid config file was found, generating a new one...");
             rename($this->getDataFolder() . "config.yml", $this->getDataFolder() . "config.yml.old");
             $this->saveDefaultConfig();
