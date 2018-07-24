@@ -2,17 +2,13 @@
 # This configuration file lets you modify how EssentialsPE work with some features
 
 # DO NOT EDIT THIS PROPERTY! For internal use ONLY
-version: "0.0.3"
-
-# SET THIS TO "TRUE" TO ENABLE THIS PLUGIN
-enable: true
+version: "0.0.4"
 
 # Disable various command features of EssentialsPE, set to false to disable
 homes: true
 warps: true
 powertool: true
 teleporting: true
-economy: false
 
 # Edit different parts of the AFK feature!
 afk:
