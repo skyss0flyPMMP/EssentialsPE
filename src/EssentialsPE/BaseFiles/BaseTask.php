@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace EssentialsPE\BaseFiles;
 
 use EssentialsPE\Loader;
-use pocketmine\scheduler\Plugin;
+use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\Task;
 
 abstract class BaseTask extends Task{
