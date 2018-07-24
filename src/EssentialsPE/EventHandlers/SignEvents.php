@@ -93,36 +93,6 @@ class SignEvents extends BaseEventHandler{
                     $event->getPlayer()->sendMessage(TextFormat::GREEN . "You have been healed" . TextFormat::GREEN . ($price ? " for " . $this->getAPI()->getCurrencySymbol() . $price : null));
                 }
             }
-            
-            // Kit sign
-            elseif(TextFormat::clean($tile->getText()[0], true) === "[Kit]"){
-                $event->setCancelled(true);
-                if(!$event->getPlayer()->hasPermission("essentials.sign.use.kit")){
-                    $event->getPlayer()->sendMessage(TextFormat::RED . "You don't have permissions to use this sign");
-                }elseif($event->getPlayer()->getGamemode() === 1 || $event->getPlayer()->getGamemode() === 3){
-                    $event->getPlayer()->sendMessage(TextFormat::RED . "[Error] You're in " . $event->getPlayer()->getServer()->getGamemodeString($event->getPlayer()->getGamemode()) . " mode");
-                    return;
-                }else{
-                    if(!($kit = $this->getAPI()->getKit($tile->getText()[1]))){
-                        $event->getPlayer()->sendMessage(TextFormat::RED . "[Error] Kit doesn't exists");
-                        return;
-                    }elseif(!$event->getPlayer()->hasPermission("essentials.kits." . $kit->getName())){
-                        $event->getPlayer()->sendMessage(TextFormat::RED . "[Error] You don't have permissions to get this kit");
-                        return;
-                    }else{
-                        $price = substr($tile->getText()[2], 7);
-                        if($price !== false && is_numeric($price)) {
-                            if(!$this->getAPI()->hasPlayerBalance($event->getPlayer(), $price)) {
-                                $event->getPlayer()->sendMessage(TextFormat::RED . "[Error] You don't have enough money to use this sign");
-                                return;
-                            }
-	                        $this->getAPI()->addToPlayerBalance($event->getPlayer(), -$price);
-                        }
-                        $kit->giveToPlayer($event->getPlayer());
-                        $event->getPlayer()->sendMessage(TextFormat::GREEN . "Getting kit " . TextFormat::AQUA . $kit->getName() . TextFormat::GREEN . ($price ? " for " . $this->getAPI()->getCurrencySymbol() . $price : "..."));
-                    }
-                }
-            }
 
             // Repair sign
             elseif(TextFormat::clean($tile->getText()[0], true) === "[Repair]"){
@@ -348,7 +318,7 @@ class SignEvents extends BaseEventHandler{
     public function onBlockBreak(BlockBreakEvent $event): void{
         $tile = $event->getBlock()->getLevel()->getTile(new Vector3($event->getBlock()->getFloorX(), $event->getBlock()->getFloorY(), $event->getBlock()->getFloorZ()));
         if($tile instanceof Sign){
-            $key = ["Free", "Gamemode", "Heal", "Kit", "Repair", "Time", "Teleport", "Warp", "Balance", "Buy", "Sell", "BalanceTop"];
+            $key = ["Free", "Gamemode", "Heal", "Repair", "Time", "Teleport", "Warp", "Balance", "Buy", "Sell", "BalanceTop"];
             foreach($key as $k){
                 if(TextFormat::clean($tile->getText()[0], true) === "[" . $k . "]" && !$event->getPlayer()->hasPermission("essentials.sign.break." . strtolower($k))){
                     $event->setCancelled(true);
@@ -433,20 +403,6 @@ class SignEvents extends BaseEventHandler{
             $price = $event->getLine(1);
             if(is_numeric($price) && $economy === true) {
                 $event->setLine(1, "Price: " . $price);
-            }
-        }
-
-        // Kit sign
-        elseif(strtolower(TextFormat::clean($event->getLine(0), true)) === "[kit]" && $event->getPlayer()->hasPermission("essentials.sign.create.kit")){
-            if(!$this->getAPI()->kitExists($event->getLine(1))){
-                $event->getPlayer()->sendMessage(TextFormat::RED . "[Error] Kit doesn't exist");
-                return;
-            }
-            $event->getPlayer()->sendMessage(TextFormat::GREEN . "Kit sign successfully created!");
-            $event->setLine(0, TextFormat::AQUA . "[Kit]");
-            $price = $event->getLine(2);
-            if(is_numeric($price) && $economy === true) {
-                $event->setLine(2, "Price: " . $price);
             }
         }
 

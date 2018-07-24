@@ -23,7 +23,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
-use pocketmine\entity\PrimedTNT;
+use pocketmine\entity\object\PrimedTNT;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\BaseInventory;
 use pocketmine\IPlayer;
@@ -61,8 +61,6 @@ class BaseAPI{
 
     /** @var Config */
     private $economy;
-    /** @var array */
-    private $kits = [];
     /** @var array */
     private $warps = [];
 
@@ -123,8 +121,7 @@ class BaseAPI{
                 $this->economy->set($k, $value);
             }
         }
-
-        $this->loadKits();
+        
         $this->loadWarps();
         $this->updateHomesAndNicks();
     }
@@ -152,19 +149,6 @@ class BaseAPI{
                 $pCfg->save();
             }
             unlink($f);
-        }
-    }
-
-    private final function loadKits(): void{
-        $parent = new Permission("essentials.kits");
-        $this->getServer()->getPluginManager()->addPermission($parent);
-
-        $cfg = new Config($this->getEssentialsPEPlugin()->getDataFolder() . "Kits.yml", Config::YAML);
-        foreach($cfg->getAll() as $n => $i){
-            $this->kits[$n] = new BaseKit($n, $i);
-            $child = new Permission("essentials.kits." . $n);
-            $child->addParent($parent, true);
-            $this->getServer()->getPluginManager()->addPermission($child);
         }
     }
 
@@ -207,7 +191,6 @@ class BaseAPI{
     public function reloadFiles(): void{
         $this->getEssentialsPEPlugin()->getConfig()->reload();
         $this->economy->reload();
-        $this->loadKits();
         $this->loadWarps();
         $this->updateHomesAndNicks();
     }
@@ -933,16 +916,16 @@ class BaseAPI{
      *   _| |_| ||  __| | | | | \__ \
      *  |_____|\__\___|_| |_| |_|___/
      */
-
-    /**
-     * Easy get an item by name and metadata.
-     * The way this function understand the information about the item is:
-     * 'ItemNameOrID:Metadata' - Example (Granite block item):
-     *      '1:1' - or - 'stone:1'
-     *
-     * @param string $item_name
-     * @return Item|ItemBlock
-     */
+	/**
+	 * Easy get an item by name and metadata.
+	 * The way this function understand the information about the item is:
+	 * 'ItemNameOrID:Metadata' - Example (Granite block item):
+	 *      '1:1' - or - 'stone:1'
+	 *
+	 * @param string $item_name
+	 * @return Item|ItemBlock
+	 * @throws \ReflectionException
+	 */
     public function getItem(string $item_name): Item{
         if(strpos($item_name, ":") !== false){
             $v = explode(":", $item_name);
@@ -964,13 +947,14 @@ class BaseAPI{
 
         return $item;
     }
-
+	
 	/**
 	 * Returns a name of an item using the class constants of the Item class.
 	 * This name is not equal to the getName() function from Item classes.
 	 *
 	 * @param Item $item
 	 * @return string|null
+	 * @throws \ReflectionException
 	 */
 	public function getReadableName(Item $item): string{
 	    $itemClass = new \ReflectionClass("pocketmine\\item\\Item");
@@ -987,12 +971,13 @@ class BaseAPI{
 		}
 		return implode(" ", $finalItemName);
 	}
-
+	
 	/**
 	 * Converts the readable item name (made using function above) to an Item object.
 	 *
 	 * @param string $item_name
 	 * @return Item
+	 * @throws \ReflectionException
 	 */
 	public function readableNameToItem(string $item_name): Item{
 		$itemClass = new \ReflectionClass("pocketmine\\item\\Item");
@@ -1109,54 +1094,6 @@ class BaseAPI{
      */
     public function canBeCondensed(Item $item): bool{
         return isset($this->condenseShapes[0][$item->getId()]) || isset($this->condenseShapes[1][$item->getId()]);
-    }
-
-    /**  _  ___ _
-     *  | |/ (_| |
-     *  | ' / _| |_ ___
-     *  |  < | | __/ __|
-     *  | . \| | |_\__ \
-     *  |_|\_|_|\__|___/
-     */
-
-    /**
-     * Check if a kit exists
-     *
-     * @param string $kit
-     * @return bool
-     */
-    public function kitExists(string $kit): bool{
-        return $this->validateName($kit, false) && isset($this->kits[$kit]);
-    }
-
-    /**
-     * Return the contents of a kit, if existent
-     *
-     * @param string $kit
-     * @return bool|BaseKit
-     */
-    public function getKit(string $kit): ?BaseKit{
-        if(!$this->kitExists($kit)){
-            return null;
-        }
-        return $this->kits[$kit];
-    }
-
-    /**
-     * Get a list of all available kits
-     *
-     * @param bool $inArray
-     * @return array|bool|string
-     */
-    public function kitList(bool $inArray = false){
-        $list = array_keys($this->kits);
-        if(count($list) < 1){
-            return false;
-        }
-        if(!$inArray){
-            return implode(", ", $list);
-        }
-        return $list;
     }
 
     /**  __  __
@@ -1904,17 +1841,17 @@ class BaseAPI{
         }
         return true;
     }
-
-    /**
-     * Return an array with the following values:
-     * 0 => Timestamp integer
-     * 1 => The rest of the string (removing any "space" between time codes)
-     *
-     * @param string $string
-     *
-     * @return array|null
-     */
-    public function stringToTimestamp(string $string): ?array{
+	
+	/**
+	 * Return an array with the following values:
+	 * 0 => Timestamp integer
+	 * 1 => The rest of the string (removing any "space" between time codes)
+	 *
+	 * @param string $string
+	 * @return array|null
+	 * @throws \Exception
+	 */
+	public function stringToTimestamp(string $string): ?array{
         /**
          * Rules:
          * Integers without suffix are considered as seconds
@@ -2156,7 +2093,7 @@ class BaseAPI{
      *      \/ \__,_|_| |_|_|___|_| |_|
      */
 
-    /** @var null|Effect */
+    /** @var Effect|null */
     private $invisibilityEffect = null;
 
     /**

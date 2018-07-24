@@ -36,7 +36,6 @@ use EssentialsPE\Commands\ItemCommand;
 use EssentialsPE\Commands\ItemDB;
 use EssentialsPE\Commands\Jump;
 use EssentialsPE\Commands\KickAll;
-use EssentialsPE\Commands\Kit;
 use EssentialsPE\Commands\Lightning;
 use EssentialsPE\Commands\More;
 use EssentialsPE\Commands\Mute;
@@ -85,6 +84,7 @@ use pocketmine\utils\TextFormat;
 class Loader extends PluginBase{
     /** @var BaseAPI */
     private $api;
+    private const version = "0.0.4";
 
     public function onEnable(): void{
         if($this->getConfig()->get("enable") === false) {
@@ -154,7 +154,6 @@ class Loader extends PluginBase{
             new ItemDB($this->getAPI()),
             new Jump($this->getAPI()),
             new KickAll($this->getAPI()),
-            new Kit($this->getAPI()),
             new Lightning($this->getAPI()),
             new More($this->getAPI()),
             new Mute($this->getAPI()),
@@ -288,11 +287,10 @@ class Loader extends PluginBase{
             $this->saveDefaultConfig();
         }
         $this->saveResource("Economy.yml");
-        $this->saveResource("Kits.yml");
         $this->saveResource("Warps.yml");
         $cfg = $this->getConfig();
 
-        if(!$cfg->exists("version") || $cfg->get("version") !== "0.0.3"){
+        if(!$cfg->exists("version") || $cfg->get("version") !== self::version){
             $this->getLogger()->debug(TextFormat::RED . "An invalid config file was found, generating a new one...");
             rename($this->getDataFolder() . "config.yml", $this->getDataFolder() . "config.yml.old");
             $this->saveDefaultConfig();
