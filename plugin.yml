@@ -248,16 +248,6 @@ permissions:
                     essentials.kill.other:
                         default: op
                         description: "Kill other players"
-            essentials.kit:
-                default: false
-                description: "Access to the /kit command"
-                children:
-                    essentials.kit.use:
-                        default: true
-                        description: "Access to the /kit command"
-                    essentials.kit.other:
-                        default: op
-                        description: "Give a kit to other players"
             essentials.lightning:
                 default: op
                 description: "Strike a lightning!"
@@ -396,9 +386,6 @@ permissions:
                             essentials.sign.break.heal:
                                 default: op
                                 description: "Allow to remove heal signs"
-                            essentials.sign.break.kit:
-                                default: op
-                                description: "Allow to remove kit signs"    
                             essentials.sign.break.repair:
                                 default: op
                                 description: "Allow to remove repair signs"
@@ -439,9 +426,6 @@ permissions:
                             essentials.sign.create.heal:
                                 default: op
                                 description: "Allow to create Heal signs"
-                            essentials.sign.create.kit:
-                                default: op
-                                description: "Allow to create Kit signs"
                             essentials.sign.create.repair:
                                 default: op
                                 description: "Allow to create Repair signs"
@@ -482,9 +466,6 @@ permissions:
                             essentials.sign.use.heal:
                                 default: op
                                 description: "Allow to use Heal signs"
-                            essentials.sign.use.kit:
-                                default: op
-                                description: "Allow to use Kit signs"
                             essentials.sign.use.repair:
                                 default: op
                                 description: "Allow to use Repair signs"
