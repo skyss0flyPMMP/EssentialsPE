@@ -16,13 +16,6 @@ use EssentialsPE\Commands\ClearInventory;
 use EssentialsPE\Commands\Compass;
 use EssentialsPE\Commands\Condense;
 use EssentialsPE\Commands\Depth;
-use EssentialsPE\Commands\Economy\Balance;
-use EssentialsPE\Commands\Economy\Eco;
-use EssentialsPE\Commands\Economy\Pay;
-use EssentialsPE\Commands\Economy\Sell;
-use EssentialsPE\Commands\Economy\SetWorth;
-use EssentialsPE\Commands\Economy\Worth;
-use EssentialsPE\Commands\Economy\BalanceTop;
 use EssentialsPE\Commands\Feed;
 use EssentialsPE\Commands\Extinguish;
 use EssentialsPE\Commands\Fly;
@@ -87,9 +80,6 @@ class Loader extends PluginBase{
     private const version = "0.0.4";
 
     public function onEnable(): void{
-        if($this->getConfig()->get("enable") === false) {
-           $this->setEnabled(false);
-        }
         // Before anything else...
         $this->checkConfig();
 
@@ -188,16 +178,6 @@ class Loader extends PluginBase{
             new Gamemode($this->getAPI()),
             new Kill($this->getAPI())		
 		];
-	    
-		$economyCommands = [
-	        new Balance($this->getAPI()),
-	        new Eco($this->getAPI()),
-	        new Pay($this->getAPI()),
-	        new Sell($this->getAPI()),
-	        new SetWorth($this->getAPI()),
-	        new Worth($this->getAPI()),
-	        new BalanceTop($this->getAPI())
-		];
 
 		$homeCommands = [
 	        new DelHome($this->getAPI()),
@@ -253,11 +233,6 @@ class Loader extends PluginBase{
 			 $commands[] = $homeCommand;
 		    }
 		}
-		foreach($economyCommands as $economyCommand) {
-		    if($this->getConfig()->get("economy") === true) {
-			 $commands[] = $economyCommand;
-		    }
-		}
 	    
         $aliased = [];
         foreach($commands as $cmd){
@@ -286,7 +261,6 @@ class Loader extends PluginBase{
         if(!file_exists($this->getDataFolder() . "config.yml")){
             $this->saveDefaultConfig();
         }
-        $this->saveResource("Economy.yml");
         $this->saveResource("Warps.yml");
         $cfg = $this->getConfig();
 

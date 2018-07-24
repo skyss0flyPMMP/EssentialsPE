@@ -58,9 +58,7 @@ class BaseAPI{
     private $ess;
     /** @var BaseAPI */
     private static $instance;
-
-    /** @var Config */
-    private $economy;
+    
     /** @var array */
     private $warps = [];
 
@@ -100,28 +98,6 @@ class BaseAPI{
     }
 
     private final function saveConfigs(): void{
-        $this->economy = new Config($this->getEssentialsPEPlugin()->getDataFolder() . "Economy.yml", Config::YAML);
-        $keys = ["default-balance", "max-money", "min-money"];
-        foreach($keys as $k){
-            if(!is_int($k)){
-                $value = 0;
-                switch($k){
-                    case "default-balance":
-                        $value = 0;
-                    break;
-                
-                    case "max-money":
-                        $value = 10000000000000;
-                    break;
-                
-                    case "min-money":
-                        $value = 0;
-                    break;
-                }
-                $this->economy->set($k, $value);
-            }
-        }
-        
         $this->loadWarps();
         $this->updateHomesAndNicks();
     }
@@ -190,7 +166,6 @@ class BaseAPI{
 
     public function reloadFiles(): void{
         $this->getEssentialsPEPlugin()->getConfig()->reload();
-        $this->economy->reload();
         $this->loadWarps();
         $this->updateHomesAndNicks();
     }
@@ -357,209 +332,6 @@ class BaseAPI{
      */
     public function removePlayerLastPosition(Player $player): void{
         $this->getSession($player)->removeLastPosition();
-    }
-
-    /**  ______
-     *  |  ____|
-     *  | |__   ___ ___  _ __   ___  _ __ ___  _   _
-     *  |  __| / __/ _ \| '_ \ / _ \| '_ ` _ \| | | |
-     *  | |___| (_| (_) | | | | (_) | | | | | | |_| |
-     *  |______\___\___/|_| |_|\___/|_| |_| |_|\__, |
-     *                                          __/ |
-     *                                         |___/
-     */
-
-    /**
-     * Get the default balance for new players
-     *
-     * @return int
-     */
-    public function getDefaultBalance(): int{
-        return (int) $this->economy->get("default-balance");
-    }
-
-    /**
-     * Get the max balance that a player can own
-     *
-     * @return int
-     */
-    public function getMaxBalance(): int{
-        return (int) $this->economy->get("max-money");
-    }
-
-    /**
-     * Gets the minimum balance that a player can own
-     *
-     * @return int
-     */
-    public function getMinBalance(): int{
-        return (int) $this->economy->get("min-money");
-    }
-
-    /**
-     * Returns the currency symbol
-     *
-     * @return string
-     */
-    public function getCurrencySymbol(): string{
-        return (string) $this->economy->get("currency-symbol");
-    }
-
-    /**
-     * Return the top 5 players with most money
-     *
-     * @param CommandSender|Player $player
-     *
-     * @return void
-     */
-    public function sendBalanceTop(Player $player): void{
-        $moneyList = $this->economy->get("player-balances");
-        arsort($moneyList);
-        $i = 0;
-        foreach($moneyList as $playerName => $money) {
-            if($i <= 4) {
-                $player->sendMessage($playerName . " - " . TextFormat::GREEN . $money);
-            } else {
-            	break;
-            }
-            $i++;
-        }
-    }
-    
-    /**
-     * Return the current balance of a player.
-     *
-     * @param Player $player
-     * @return int
-     */
-    public function getPlayerBalance(Player $player): int{
-        $balance = $this->economy->getNested("player-balances." . $player->getName());
-        if(!$balance){
-            $this->setPlayerBalance($player, $b = $this->getDefaultBalance());
-            return $b;
-        }
-        return $balance;
-    }
-
-    /**
-     * Sets the balance of a player
-     *
-     * @param Player $player
-     * @param int $balance
-     */
-    public function setPlayerBalance(Player $player, int $balance): void{
-        if($balance > $this->getMaxBalance()){
-            $balance = $this->getMaxBalance();
-        }elseif($balance < $this->getMinBalance()){
-            $balance = $this->getMinBalance();
-        }elseif($balance < 0 && !$player->hasPermission("essentials.eco.load")){
-            $balance = 0;
-        }
-        $this->economy->setNested("player-balances." . $player->getName(), $balance);
-        $this->economy->save();
-    }
-
-    /**
-     * Sums a quantity to player's balance
-     * NOTE: You can also specify negative quantities!
-     *
-     * @param Player $player
-     * @param int $quantity
-     */
-    public function addToPlayerBalance(Player $player, int $quantity): void{
-        $balance = $this->getPlayerBalance($player) + $quantity;
-        if($balance > $this->getMaxBalance()){
-            $balance = $this->getMaxBalance();
-        }elseif($balance < $this->getMinBalance()){
-            $balance = $this->getMinBalance();
-        }elseif($balance < 0 && !$player->hasPermission("essentials.eco.loan")){
-            $balance = 0;
-        }
-        $this->setPlayerBalance($player, $balance);
-    }
-
-    /**
-     * Get the worth of an item
-     *
-     * @param int $itemId
-     * @return int
-     */
-    public function getItemWorth(int $itemId): int{
-        return $this->economy->getNested("worth." . $itemId, false);
-    }
-
-    /**
-     * Sets the worth of an item
-     *
-     * @param int $itemId
-     * @param int $worth
-     */
-    public function setItemWorth(int $itemId, int $worth): void{
-        $this->economy->setNested("worth." . $itemId, $worth);
-        $this->economy->save();
-    }
-
-    /**
-     * @param Player $player
-     * @param Item $item
-     * @param int|null $amount
-     *
-     * @return array|bool|int
-     */
-    public function sellPlayerItem(Player $player, Item $item, int $amount = null){
-        if(!$this->getItemWorth($item->getId())){
-            return false;
-        }
-        /** @var Item[] $contents */
-        $contents = [];
-        $quantity = 0;
-        foreach($player->getInventory()->getContents() as $s => $i){
-            if($i->getId() === $item->getId() && $i->getDamage() === $item->getDamage()){
-                $contents[$s] = clone $i;
-                $quantity += $i->getCount();
-            }
-        }
-        $worth = $this->getItemWorth($item->getId());
-        if($amount === null){
-            $worth *= $quantity;
-            $player->getInventory()->remove($item);
-            $this->addToPlayerBalance($player, $worth);
-            return $worth;
-        }
-        $amount = (int) $amount;
-        if($amount < 0){
-            $amount = $quantity - $amount;
-        }elseif($amount > $quantity){
-            return -1;
-        }
-
-        $count = $amount;
-        foreach($contents as $s => $i){
-            if(($count - $i->getCount()) >= 0){
-                $count -= $i->getCount();
-                $i->setCount(0);
-            }else{
-                $c = $i->getCount() - $count;
-                $i->setCount($c);
-                $count = 0;
-            }
-            if($count <= 0){
-                break;
-            }
-        }
-        return [$amount, $worth];
-    }
-    
-    /**
-     * @param Player $player
-     * @param int $amount
-     * @return bool
-     */
-    public function hasPlayerBalance(Player $player, int $amount): bool{
-        if($this->getPlayerBalance($player) >= $amount) {
-            return true;
-        }
-        return false;
     }
 
     /**  ______       _   _ _   _
@@ -1468,7 +1240,6 @@ class BaseAPI{
         return [
             "name" => $player->getName(),
             "nick" => $player->getDisplayName(),
-            //"money" => $this->getPlayerBalance($player), TODO
             "afk" => $this->isAFK($player),
             "location" => $this->getGeoLocation($player)
         ];
