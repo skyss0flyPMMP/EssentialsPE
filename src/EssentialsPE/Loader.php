@@ -23,7 +23,6 @@ use EssentialsPE\Commands\Economy\Sell;
 use EssentialsPE\Commands\Economy\SetWorth;
 use EssentialsPE\Commands\Economy\Worth;
 use EssentialsPE\Commands\Economy\BalanceTop;
-use EssentialsPE\Commands\EssentialsPE;
 use EssentialsPE\Commands\Feed;
 use EssentialsPE\Commands\Extinguish;
 use EssentialsPE\Commands\Fly;
@@ -145,7 +144,6 @@ class Loader extends PluginBase{
             new Compass($this->getAPI()),
             new Condense($this->getAPI()),
             new Depth($this->getAPI()),
-            new EssentialsPE($this->getAPI()),
             new Extinguish($this->getAPI()),
             new Fly($this->getAPI()),
             new GetPos($this->getAPI()),
