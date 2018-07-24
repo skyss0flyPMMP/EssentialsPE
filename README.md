@@ -1,5 +1,10 @@
-EssentialsPE  <a href="https://discord.gg/NgHf9jt"><img src="https://discordapp.com/api/guilds/402639859535052811/embed.png" alt="Discord server"/></a>
+EssentialsPE  
 =========
+
+| Poggit | Discord |
+| :---: | :---: |
+[![Poggit](https://poggit.pmmp.io/ci.shield/poggit-orphanage/EssentialsPE/EssentialsPE)](https://poggit.pmmp.io/ci/LegendOfMCPE/EssentialsPE/EssentialsPE) | <a href="https://discord.gg/NgHf9jt"><img src="https://discordapp.com/api/guilds/402639859535052811/embed.png" alt="Discord server"/></a> |
+
 
 The port version of [Bukkit Essentials](http://dev.bukkit.org/bukkit-plugins/essentials/) for [PocketMine-MP Software](http://www.pmmp.io/).
 
@@ -44,9 +49,6 @@ Installation for EssentialsPE:<br>
 2. Upload your EssentialsPE phar file to the plugins/ folder from your server.<br>
 3. Restart your server.<br>
 4. Enjoy.<br>
-
-[![Poggit](https://poggit.pmmp.io/ci.shield/poggit-orphanage/EssentialsPE/EssentialsPE)](https://poggit.pmmp.io/ci/LegendOfMCPE/EssentialsPE/EssentialsPE)
-[![Build Status](https://travis-ci.org/poggit-orphanage/EssentialsPE.svg?branch=master)](https://travis-ci.org/poggit-orphanage/EssentialsPE)
 
 ### Issues
 We always aim to keep EssentialsPE bug free, and reporting issues is greatly appreciated. If you happen to find an issue in EssentialsPE, here's what to do:<br>
