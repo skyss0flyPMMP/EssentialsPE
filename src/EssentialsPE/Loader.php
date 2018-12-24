@@ -71,6 +71,7 @@ use EssentialsPE\EventHandlers\OtherEvents;
 use EssentialsPE\EventHandlers\PlayerEvents;
 use EssentialsPE\EventHandlers\SignEvents;
 use EssentialsPE\Events\CreateAPIEvent;
+use JackMD\UpdateNotifier\UpdateNotifier;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat;
 
@@ -78,12 +79,17 @@ class Loader extends PluginBase{
 
     /** @var BaseAPI */
     private $api;
+    /** @var string */
     private const version = "0.0.4";
 
-    public function onEnable(): void{
-        // Before anything else...
-        $this->checkConfig();
+	public function onLoad(): void{
+		// Before anything else...
+		$this->checkConfig();
 
+		UpdateNotifier::checkUpdate($this, $this->getDescription()->getName(), $this->getDescription()->getVersion());
+	}
+
+    public function onEnable(): void{
         // Custom API Setup :3
         $ev = new CreateAPIEvent($this, BaseAPI::class);
 	    try{
