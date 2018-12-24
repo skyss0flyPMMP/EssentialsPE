@@ -75,6 +75,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat;
 
 class Loader extends PluginBase{
+
     /** @var BaseAPI */
     private $api;
     private const version = "0.0.4";
@@ -84,8 +85,14 @@ class Loader extends PluginBase{
         $this->checkConfig();
 
         // Custom API Setup :3
-        $this->getServer()->getPluginManager()->callEvent($ev = new CreateAPIEvent($this, BaseAPI::class));
-        $class = $ev->getClass();
+        $ev = new CreateAPIEvent($this, BaseAPI::class);
+	    try{
+		    $ev->call();
+	    }
+	    catch(\ReflectionException $exception){
+	    	$this->getLogger()->logException($exception);
+	    }
+	    $class = $ev->getClass();
         $this->api = new $class($this);
 
         // Other startup code...
