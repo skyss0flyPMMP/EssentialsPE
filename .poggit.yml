@@ -2,4 +2,7 @@
 projects:
   EssentialsPE:
     icon: resources/ess.jpg
+    libs:
+      - src: JackMD/UpdateNotifier/UpdateNotifier
+        version: ^1.0.0
 ...
