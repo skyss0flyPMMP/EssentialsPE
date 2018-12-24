@@ -169,14 +169,14 @@ class Loader extends PluginBase{
             new Vanish($this->getAPI()),
             new Whois($this->getAPI()),
             new World($this->getAPI()),
-		
+
             // Messages
             new Msg($this->getAPI()),
             new Reply($this->getAPI()),
-		
+
             // Override
             new Gamemode($this->getAPI()),
-            new Kill($this->getAPI())		
+            new Kill($this->getAPI())
 		];
 
 		$homeCommands = [
@@ -233,7 +233,7 @@ class Loader extends PluginBase{
 			 $commands[] = $homeCommand;
 		    }
 		}
-	    
+
         $aliased = [];
         foreach($commands as $cmd){
             /** @var BaseCommand $cmd */
